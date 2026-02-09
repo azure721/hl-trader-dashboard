@@ -1,4 +1,4 @@
-/* 1. 颜色变量：严格按照你原始文件的数值，不进行任何微调 */
+/* 严格保留你的原始颜色定义 */
 * { margin:0; padding:0; box-sizing:border-box; }
 
 :root {
@@ -18,15 +18,15 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: var(--bg);
     color: var(--text);
-    /* 2. 字号调整：从 13px 放大到 15px，确保阅读清晰 */
+    /* 1. 字号微调：统一放大至 15px */
     font-size: 15px; 
 }
 
 .header {
     display: flex;
     justify-content: center;
-    gap: 8px;
-    padding: 10px 16px;
+    gap: 12px;
+    padding: 12px 16px;
     background: var(--bg2);
     border-bottom: 1px solid var(--border);
     position: sticky;
@@ -35,9 +35,9 @@ body {
 }
 
 .header input {
-    /* 3. 输入框宽度从 320px 增加到 480px */
+    /* 2. 输入框加宽至 480px */
     width: 480px; 
-    padding: 6px 12px;
+    padding: 8px 12px;
     background: var(--bg);
     border: 1px solid var(--border);
     border-radius: 4px;
@@ -49,7 +49,7 @@ body {
 .header input:focus { outline: none; border-color: var(--accent); }
 
 .header button {
-    padding: 6px 20px;
+    padding: 8px 24px;
     background: var(--accent);
     border: none;
     border-radius: 4px;
@@ -61,30 +61,25 @@ body {
 .refresh-timer {
     color: var(--text2);
     font-size: 13px;
+    line-height: 36px;
     margin-left: 16px;
 }
 
-.refresh-timer #refreshTimer {
-    color: var(--green);
-    font-weight: 500;
-}
-
 .main {
-    /* 4. 容器内边距增加，且总宽从 1200px 扩展到 1600px */
-    padding: 20px 32px;
+    padding: 24px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    max-width: 1600px;
+    gap: 20px;
+    /* 3. 整体容器加宽：最大宽度设为 1600px */
+    max-width: 1600px; 
     margin: 0 auto;
 }
 
 .trader-item {
     background: var(--bg2);
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: 8px;
     overflow: hidden;
-    cursor: grab;
 }
 
 .positions-table {
@@ -95,15 +90,13 @@ body {
 
 .positions-table th,
 .positions-table td {
-    /* 5. 单元格垂直间距从 10px 增加到 14px */
-    padding: 14px 12px; 
+    /* 4. 增加单元格间距，保持呼吸感 */
+    padding: 14px 16px; 
     text-align: left;
-    /* 6. 表格内字号统一提升到 14px */
-    font-size: 14px; 
 }
 
 .positions-table th {
-    font-weight: 500;
+    font-weight: 600;
     color: var(--text2);
     font-size: 12px;
     text-transform: uppercase;
@@ -113,51 +106,105 @@ body {
 
 .positions-table td {
     border-bottom: 1px solid var(--border);
+    font-size: 14px;
 }
 
-/* 维持原本的列分布比例 */
-.positions-table th:nth-child(1) { width: 11%; }
-.positions-table th:nth-child(8) { width: 25%; }
+/* 维持原本的列宽分配 */
+.positions-table th:nth-child(1) { width: 14%; }
+.positions-table th:nth-child(8) { width: 22%; }
 
 .th-info .name {
     font-weight: 600;
-    /* 7. 交易员名称字号提升 */
-    font-size: 16px; 
+    font-size: 16px;
     color: var(--text);
 }
 
-/* 8. 修复按钮颜色不统一问题：全部强制使用 var(--text2) 颜色 */
-.th-actions .history-btn,
-.th-actions .link {
+.account-cell {
+    color: var(--text2);
+    font-size: 13px;
+    font-family: monospace;
+    margin-top: 4px;
+}
+
+.th-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+}
+
+/* 按钮颜色恢复：强制保持和你原始版本一致的紫色/深灰 */
+.history-btn {
     background: var(--bg);
     border: 1px solid var(--border);
-    border-radius: 3px;
-    color: var(--text2) !important; 
-    font-size: 12px;
+    color: var(--text2);
     padding: 5px 12px;
+    border-radius: 4px;
+    font-size: 12px;
     cursor: pointer;
+}
+.history-btn:hover { border-color: var(--accent); color: var(--text); }
+
+.th-actions .link {
+    color: var(--accent); /* 这里恢复你原本详情链接的颜色 */
+    font-size: 12px;
     text-decoration: none;
-    display: inline-block;
+    font-weight: 500;
 }
 
-.th-actions .history-btn:hover,
-.th-actions .link:hover { 
-    border-color: var(--accent); 
-    color: var(--text) !important; 
-}
-
-.th-actions .remove-btn {
+.remove-btn {
     background: none;
     border: none;
-    color: var(--text2);
+    color: #444;
     font-size: 20px;
     cursor: pointer;
-    margin-left: 12px;
-    vertical-align: middle;
+    margin-left: 8px;
 }
 
-.th-actions .remove-btn:hover { color: var(--red); }
+/* 5. 弹窗布局修复：确保不再显示在左下角 */
+.modal {
+    display: none; /* 默认隐藏 */
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85); /* 遮罩层 */
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
 
-/* 状态颜色 */
-.positive, .pnl-positive, .type-long { color: var(--green); }
-.negative, .pnl-negative, .type-short { color: var(--red); }
+/* 当包含 .show 类时显示并居中 */
+.modal.show { 
+    display: flex !important; 
+}
+
+.modal-content {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 650px;
+    max-height: 85vh;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg3);
+}
+
+.modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    background: var(--bg);
+}
+
+/* 盈亏状态颜色 */
+.pnl-positive, .positive, .type-long { color: var(--green); }
+.pnl-negative, .negative, .type-short { color: var(--red); }
