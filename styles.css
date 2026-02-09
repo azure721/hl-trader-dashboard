@@ -1,30 +1,34 @@
+/* 全局样式优化 */
 * { margin:0; padding:0; box-sizing:border-box; }
 
 :root {
     --bg: #000;
-    --bg2: #0a0a0a;
-    --bg3: #111;
+    --bg2: #0d0d0d; /* 稍微调亮一点背景，增加层级感 */
+    --bg3: #1a1a1a;
     --border: #333;
     --text: #fff;
-    --text2: #888;
-    --green: #00c853;
+    --text2: #bbb; /* 调亮次要文字，提高清晰度 */
+    --green: #00e676; /* 使用更亮的绿色 */
     --red: #ff5252;
     --orange: #ff9800;
-    --accent: #5b5bd6;
+    --accent: #7c7cff; /* 调亮主题色 */
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: var(--bg);
     color: var(--text);
-    font-size: 13px;
+    font-size: 15px; /* 全局字号从 13px 提升到 15px */
+    line-height: 1.5;
 }
 
+/* 顶部导航栏放大 */
 .header {
     display: flex;
     justify-content: center;
-    gap: 8px;
-    padding: 10px 16px;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
     background: var(--bg2);
     border-bottom: 1px solid var(--border);
     position: sticky;
@@ -33,263 +37,159 @@ body {
 }
 
 .header input {
-    width: 320px;
-    padding: 6px 12px;
+    width: 400px; /* 加宽输入框 */
+    padding: 10px 16px;
     background: var(--bg);
     border: 1px solid var(--border);
-    border-radius: 4px;
+    border-radius: 6px;
     color: var(--text);
-    font-size: 12px;
+    font-size: 14px;
     font-family: monospace;
 }
 
-.header input:focus { outline: none; border-color: var(--accent); }
-
 .header button {
-    padding: 6px 16px;
+    padding: 10px 24px;
     background: var(--accent);
-    border: none;
-    border-radius: 4px;
+    font-weight: 600;
+    border-radius: 6px;
     color: #fff;
-    font-size: 12px;
+    font-size: 14px;
     cursor: pointer;
+    transition: background 0.2s;
 }
 
+.header button:hover {
+    background: #5b5bd6;
+}
+
+/* 刷新定时器 */
 .refresh-timer {
     color: var(--text2);
-    font-size: 11px;
-    margin-left: 16px;
+    font-size: 13px;
+    margin-left: 20px;
 }
 
-.refresh-timer #refreshTimer {
-    color: var(--green);
-    font-weight: 500;
-}
-
+/* 列表容器 */
 .main {
-    padding: 16px 32px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    max-width: 1500px;
+    gap: 20px;
+    max-width: 1600px;
     margin: 0 auto;
 }
 
+/* 交易员卡片 */
 .trader-item {
     background: var(--bg2);
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: 10px;
     overflow: hidden;
-    cursor: grab;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
 }
 
-.trader-item:active { cursor: grabbing; }
-
-.trader-item.dragging {
-    opacity: 0.5;
-    border: 1px dashed var(--accent);
-}
-
+/* 表格样式大幅优化 */
 .positions-table {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed;
 }
 
 .positions-table th,
 .positions-table td {
-    padding: 10px 12px;
+    padding: 14px 16px; /* 增加内边距，让数据“呼吸” */
     text-align: left;
-    font-size: 12px;
+    border-bottom: 1px solid var(--border);
 }
 
 .positions-table th {
-    font-weight: 500;
+    font-weight: 600;
     color: var(--text2);
-    font-size: 11px;
+    font-size: 12px;
     text-transform: uppercase;
     background: var(--bg3);
-    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.5px;
 }
 
-.positions-table td {
-    border-bottom: 1px solid var(--border);
-}
+/* 调整列宽分配 */
+.positions-table th:nth-child(1) { width: 15%; } /* 姓名/账户 */
+.positions-table th:nth-child(2) { width: 10%; } /* 币种 */
+.positions-table th:nth-child(3) { width: 12%; } /* 类型 */
+.positions-table th:nth-child(4) { width: 15%; } /* 规模 */
+.positions-table th:nth-child(5) { width: 12%; } /* 盈亏 */
+.positions-table th:nth-child(8) { width: 12%; } /* 强平价 */
 
-.positions-table th:nth-child(1) { width: 11%; }
-.positions-table th:nth-child(2) { width: 8%; }
-.positions-table th:nth-child(3) { width: 10%; }
-.positions-table th:nth-child(4) { width: 13%; }
-.positions-table th:nth-child(5) { width: 11%; }
-.positions-table th:nth-child(6) { width: 11%; }
-.positions-table th:nth-child(7) { width: 11%; }
-.positions-table th:nth-child(8) { width: 25%; }
-
-.positions-table tbody tr:last-child td { border-bottom: none; }
-.positions-table tbody tr:hover { background: rgba(255,255,255,0.02); }
-
-.th-info { text-transform: none !important; }
-
+/* 信息格优化 */
 .th-info .name {
-    font-weight: 600;
-    font-size: 13px;
-    color: var(--text);
+    font-weight: 700;
+    font-size: 16px; /* 交易员名字加大 */
+    color: var(--accent);
 }
-
-.th-info .edit-btn {
-    cursor: pointer;
-    opacity: 0.4;
-    margin-left: 4px;
-}
-
-.th-info .edit-btn:hover { opacity: 1; }
 
 .account-cell {
-    color: var(--text2);
-    font-size: 11px;
-}
-
-.th-actions { text-align: right; }
-
-.th-actions .history-btn {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    color: var(--text2);
-    font-size: 11px;
-    padding: 4px 10px;
-    cursor: pointer;
-    margin-left: 35px;
-}
-
-.th-actions .history-btn:hover { border-color: var(--accent); color: var(--text); }
-
-.th-actions .link {
-    color: var(--text2);
-    font-size: 11px;
-    text-decoration: none;
-    margin-left: 12px;
-}
-
-.th-actions .link:hover { color: var(--accent); }
-
-.th-actions .remove-btn {
-    background: none;
-    border: none;
-    color: var(--text2);
-    font-size: 16px;
-    cursor: pointer;
-    margin-left: 12px;
-}
-
-.th-actions .remove-btn:hover { color: var(--red); }
-
-.name-input {
-    background: var(--bg);
-    border: 1px solid var(--accent);
-    border-radius: 3px;
     color: var(--text);
+    font-weight: 500;
     font-size: 13px;
-    padding: 2px 6px;
-    width: 100px;
+    font-family: monospace;
 }
 
-.name-input:focus { outline: none; }
+/* 盈亏文字加粗 */
+.pnl-positive, .positive { color: var(--green); font-weight: 700; }
+.pnl-negative, .negative { color: var(--red); font-weight: 700; }
 
-.positive { color: var(--green); }
-.negative { color: var(--red); }
-.type-long { color: var(--green); }
-.type-short { color: var(--red); }
-.pnl-positive { color: var(--green); }
-.pnl-negative { color: var(--red); }
-.liq-price { color: var(--text); }
+.type-long { color: var(--green); font-weight: 600; }
+.type-short { color: var(--red); font-weight: 600; }
 
-/* Modal */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.85);
-    z-index: 200;
+/* 价格字体使用等宽，防止数字跳动 */
+.positions-table td:nth-child(6),
+.positions-table td:nth-child(7),
+.positions-table td:nth-child(8) {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 14px;
+}
+
+/* 操作按钮 */
+.th-actions {
+    display: flex;
+    justify-content: flex-end;
     align-items: center;
-    justify-content: center;
+    gap: 15px;
 }
 
-.modal.show { display: flex; }
+.history-btn {
+    background: var(--bg3) !important;
+    border: 1px solid var(--border) !important;
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+}
 
+.remove-btn {
+    font-size: 20px !important;
+    padding: 0 5px;
+}
+
+/* 弹窗历史记录优化 */
 .modal-content {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    width: 90%;
-    max-width: 600px;
-    max-height: 80vh;
-    overflow: hidden;
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--border);
-    background: var(--bg3);
-    font-weight: 600;
-}
-
-.modal-close {
-    background: none;
-    border: none;
-    color: var(--text2);
-    font-size: 20px;
-    cursor: pointer;
-}
-
-.modal-close:hover { color: var(--text); }
-
-.modal-body {
-    padding: 16px;
-    overflow-y: auto;
-    max-height: calc(80vh - 50px);
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+    width: 95%;
+    max-width: 700px;
+    border-radius: 12px;
 }
 
 .history-item {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 12px;
+    padding: 16px;
+    margin-bottom: 8px;
 }
 
-.history-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--border);
+.history-symbol {
+    font-size: 16px;
+    color: var(--accent);
 }
-
-.history-symbol { font-weight: 600; font-size: 13px; }
-.history-meta { font-size: 11px; color: var(--text2); margin-top: 2px; }
-
-.history-side {
-    font-size: 11px;
-    padding: 3px 8px;
-    border-radius: 3px;
-}
-
-.history-side.long { background: rgba(0,200,83,0.15); color: var(--green); }
-.history-side.short { background: rgba(255,82,82,0.15); color: var(--red); }
 
 .history-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
+    gap: 12px;
+    margin-top: 10px;
 }
 
-.hf { display: flex; justify-content: space-between; align-items: center; }
-.hl { font-size: 11px; color: var(--text2); }
-.hf span:last-child { font-size: 12px; }
+.hf span:last-child {
+    font-weight: 600;
+    font-size: 14px;
+}
