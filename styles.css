@@ -1,4 +1,3 @@
-/* 严格保留你的原始颜色定义 */
 * { margin:0; padding:0; box-sizing:border-box; }
 
 :root {
@@ -18,15 +17,15 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: var(--bg);
     color: var(--text);
-    /* 1. 字号微调：统一放大至 15px */
-    font-size: 15px; 
+    font-size: 16px;
 }
 
 .header {
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 12px;
-    padding: 12px 16px;
+    padding: 16px 24px;
     background: var(--bg2);
     border-bottom: 1px solid var(--border);
     position: sticky;
@@ -35,51 +34,61 @@ body {
 }
 
 .header input {
-    /* 2. 输入框加宽至 480px */
-    width: 480px; 
-    padding: 8px 12px;
+    width: 400px;
+    padding: 10px 16px;
     background: var(--bg);
     border: 1px solid var(--border);
-    border-radius: 4px;
+    border-radius: 6px;
     color: var(--text);
-    font-size: 14px;
+    font-size: 15px;
     font-family: monospace;
 }
 
 .header input:focus { outline: none; border-color: var(--accent); }
 
 .header button {
-    padding: 8px 24px;
+    padding: 10px 24px;
     background: var(--accent);
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     color: #fff;
-    font-size: 14px;
+    font-size: 15px;
     cursor: pointer;
 }
 
 .refresh-timer {
     color: var(--text2);
-    font-size: 13px;
-    line-height: 36px;
-    margin-left: 16px;
+    font-size: 14px;
+    margin-left: 20px;
+}
+
+.refresh-timer #refreshTimer {
+    color: var(--green);
+    font-weight: 500;
 }
 
 .main {
-    padding: 24px;
+    padding: 24px 48px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    /* 3. 整体容器加宽：最大宽度设为 1600px */
-    max-width: 1600px; 
+    gap: 16px;
+    max-width: 1600px;
     margin: 0 auto;
 }
 
 .trader-item {
     background: var(--bg2);
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 6px;
     overflow: hidden;
+    cursor: grab;
+}
+
+.trader-item:active { cursor: grabbing; }
+
+.trader-item.dragging {
+    opacity: 0.5;
+    border: 1px dashed var(--accent);
 }
 
 .positions-table {
@@ -90,15 +99,15 @@ body {
 
 .positions-table th,
 .positions-table td {
-    /* 4. 增加单元格间距，保持呼吸感 */
-    padding: 14px 16px; 
+    padding: 14px 16px;
     text-align: left;
+    font-size: 15px;
 }
 
 .positions-table th {
-    font-weight: 600;
+    font-weight: 500;
     color: var(--text2);
-    font-size: 12px;
+    font-size: 13px;
     text-transform: uppercase;
     background: var(--bg3);
     border-bottom: 1px solid var(--border);
@@ -106,12 +115,21 @@ body {
 
 .positions-table td {
     border-bottom: 1px solid var(--border);
-    font-size: 14px;
 }
 
-/* 维持原本的列宽分配 */
-.positions-table th:nth-child(1) { width: 14%; }
-.positions-table th:nth-child(8) { width: 22%; }
+.positions-table th:nth-child(1) { width: 11%; }
+.positions-table th:nth-child(2) { width: 8%; }
+.positions-table th:nth-child(3) { width: 10%; }
+.positions-table th:nth-child(4) { width: 13%; }
+.positions-table th:nth-child(5) { width: 11%; }
+.positions-table th:nth-child(6) { width: 11%; }
+.positions-table th:nth-child(7) { width: 11%; }
+.positions-table th:nth-child(8) { width: 25%; }
+
+.positions-table tbody tr:last-child td { border-bottom: none; }
+.positions-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+.th-info { text-transform: none !important; }
 
 .th-info .name {
     font-weight: 600;
@@ -119,75 +137,95 @@ body {
     color: var(--text);
 }
 
+.th-info .edit-btn {
+    cursor: pointer;
+    opacity: 0.4;
+    margin-left: 4px;
+}
+
+.th-info .edit-btn:hover { opacity: 1; }
+
 .account-cell {
     color: var(--text2);
-    font-size: 13px;
-    font-family: monospace;
-    margin-top: 4px;
+    font-size: 14px;
 }
 
-.th-actions {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 12px;
-}
+.th-actions { text-align: right; }
 
-/* 按钮颜色恢复：强制保持和你原始版本一致的紫色/深灰 */
-.history-btn {
+.th-actions .history-btn {
     background: var(--bg);
     border: 1px solid var(--border);
-    color: var(--text2);
-    padding: 5px 12px;
     border-radius: 4px;
-    font-size: 12px;
+    color: var(--text2);
+    font-size: 14px;
+    padding: 6px 14px;
     cursor: pointer;
+    margin-left: 40px;
 }
-.history-btn:hover { border-color: var(--accent); color: var(--text); }
+
+.th-actions .history-btn:hover { border-color: var(--accent); color: var(--text); }
 
 .th-actions .link {
-    color: var(--accent); /* 这里恢复你原本详情链接的颜色 */
-    font-size: 12px;
+    color: var(--text2);
+    font-size: 14px;
     text-decoration: none;
-    font-weight: 500;
+    margin-left: 16px;
 }
 
-.remove-btn {
+.th-actions .link:hover { color: var(--accent); }
+
+.th-actions .remove-btn {
     background: none;
     border: none;
-    color: #444;
+    color: var(--text2);
     font-size: 20px;
     cursor: pointer;
-    margin-left: 8px;
+    margin-left: 16px;
 }
 
-/* 5. 弹窗布局修复：确保不再显示在左下角 */
+.th-actions .remove-btn:hover { color: var(--red); }
+
+.name-input {
+    background: var(--bg);
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    color: var(--text);
+    font-size: 16px;
+    padding: 4px 10px;
+    width: 120px;
+}
+
+.name-input:focus { outline: none; }
+
+.positive { color: var(--green); }
+.negative { color: var(--red); }
+.type-long { color: var(--green); }
+.type-short { color: var(--red); }
+.pnl-positive { color: var(--green); }
+.pnl-negative { color: var(--red); }
+.liq-price { color: var(--text); }
+
+/* Modal */
 .modal {
-    display: none; /* 默认隐藏 */
+    display: none;
     position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.85); /* 遮罩层 */
-    z-index: 1000;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 200;
     align-items: center;
     justify-content: center;
 }
 
-/* 当包含 .show 类时显示并居中 */
-.modal.show { 
-    display: flex !important; 
-}
+.modal.show { display: flex; }
 
 .modal-content {
     background: var(--bg2);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 10px;
     width: 90%;
-    max-width: 650px;
-    max-height: 85vh;
+    max-width: 700px;
+    max-height: 80vh;
     overflow: hidden;
-    position: relative;
-    display: flex;
-    flex-direction: column;
 }
 
 .modal-header {
@@ -197,14 +235,63 @@ body {
     padding: 16px 20px;
     border-bottom: 1px solid var(--border);
     background: var(--bg3);
+    font-weight: 600;
+    font-size: 18px;
 }
+
+.modal-close {
+    background: none;
+    border: none;
+    color: var(--text2);
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.modal-close:hover { color: var(--text); }
 
 .modal-body {
     padding: 20px;
     overflow-y: auto;
-    background: var(--bg);
+    max-height: calc(80vh - 60px);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
-/* 盈亏状态颜色 */
-.pnl-positive, .positive, .type-long { color: var(--green); }
-.pnl-negative, .negative, .type-short { color: var(--red); }
+.history-item {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.history-symbol { font-weight: 600; font-size: 16px; }
+.history-meta { font-size: 13px; color: var(--text2); margin-top: 4px; }
+
+.history-side {
+    font-size: 13px;
+    padding: 5px 12px;
+    border-radius: 4px;
+}
+
+.history-side.long { background: rgba(0,200,83,0.15); color: var(--green); }
+.history-side.short { background: rgba(255,82,82,0.15); color: var(--red); }
+
+.history-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.hf { display: flex; justify-content: space-between; align-items: center; }
+.hl { font-size: 14px; color: var(--text2); }
+.hf span:last-child { font-size: 15px; }
