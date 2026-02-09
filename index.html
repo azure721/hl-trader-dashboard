@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Trader Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app">
+        <header class="header">
+            <input type="text" id="traderAddress" placeholder="输入钱包地址 (0x...)" spellcheck="false">
+            <button id="addTraderBtn">添加</button>
+            <span class="refresh-timer">刷新: <span id="refreshTimer">30s</span></span>
+        </header>
+        <main class="main" id="tradersList"></main>
+    </div>
+
+    <div class="modal" id="historyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>仓位历史</span>
+                <button class="modal-close" id="closeModal">×</button>
+            </div>
+            <div class="modal-body" id="historyList"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
