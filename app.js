@@ -22,6 +22,7 @@ class TraderDashboard {
         document.getElementById('historyModal').onclick = (e) => {
             if (e.target.id === 'historyModal') document.getElementById('historyModal').classList.remove('show');
         };
+        document.getElementById('manualRefreshBtn').onclick = () => this.manualRefresh();
 
         // Request notification permission
         this.requestNotificationPermission();
@@ -51,20 +52,26 @@ class TraderDashboard {
     }
 
     startAutoRefresh() {
-        setInterval(() => this.refreshAll(), 30000);
-        this.updateRefreshTimer();
+        this.countdown = 30;
+        setInterval(() => {
+            this.countdown--;
+            if (this.countdown <= 0) {
+                this.refreshAll();
+                this.countdown = 30;
+            }
+            const timerEl = document.getElementById('refreshTimer');
+            if (timerEl) timerEl.textContent = this.countdown + 's';
+        }, 1000);
     }
 
-    updateRefreshTimer() {
-        let countdown = 30;
-        const timerEl = document.getElementById('refreshTimer');
-        if (timerEl) timerEl.textContent = countdown + 's';
-
-        setInterval(() => {
-            countdown--;
-            if (countdown <= 0) countdown = 30;
-            if (timerEl) timerEl.textContent = countdown + 's';
-        }, 1000);
+    async manualRefresh() {
+        const btn = document.getElementById('manualRefreshBtn');
+        btn.disabled = true;
+        btn.textContent = '刷新中...';
+        await this.refreshAll();
+        this.countdown = 30;
+        btn.disabled = false;
+        btn.textContent = '🔄 刷新';
     }
 
     async refreshAll() {
