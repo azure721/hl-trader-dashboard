@@ -68,7 +68,13 @@ class TraderDashboard {
     }
 
     async refreshAll() {
-        for (const [addr, oldData] of this.traders) {
+        // Get current DOM order instead of Map order
+        const items = document.querySelectorAll('.trader-item');
+        for (const el of items) {
+            const addr = el.dataset.address;
+            const oldData = this.traders.get(addr);
+            if (!oldData) continue;
+
             const newData = await this.fetchData(addr);
 
             // Detect position changes
@@ -77,14 +83,11 @@ class TraderDashboard {
             // Update data
             this.traders.set(addr, newData);
 
-            // Re-render
-            const el = document.querySelector(`.trader-item[data-address="${addr}"]`);
-            if (el) {
-                const parent = el.parentNode;
-                const next = el.nextSibling;
-                el.remove();
-                this.renderAt(newData, parent, next);
-            }
+            // Re-render in place
+            const parent = el.parentNode;
+            const next = el.nextSibling;
+            el.remove();
+            this.renderAt(newData, parent, next);
         }
     }
 
@@ -244,7 +247,7 @@ class TraderDashboard {
                     <td class="account-cell">${i === 0 ? accountInfo : ''}</td>
                     <td>${p.asset}</td>
                     <td class="${typeClass}">${p.isLong?'Long':'Short'} ${p.leverage}x</td>
-                    <td>$${p.value.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}<br><span style="color:#666;font-size:11px">${p.size.toFixed(4)} ${p.asset}</span></td>
+                    <td>$${p.value.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}<br><span style="color:#666;font-size:13px">${p.size.toFixed(4)} ${p.asset}</span></td>
                     <td class="${pClass}">${p.pnl>=0?'+':'-'}$${Math.abs(p.pnl).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</td>
                     <td>${this.fmtPrice(p.entry)}</td>
                     <td>${this.fmtPrice(p.mark)}</td>
