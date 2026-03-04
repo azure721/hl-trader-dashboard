@@ -27,9 +27,15 @@ class TraderDashboard {
         // Request notification permission
         this.requestNotificationPermission();
 
-        // Load saved
+        // Load saved (sequential to preserve order)
         const saved = localStorage.getItem('trackedTraders');
-        if (saved) JSON.parse(saved).forEach(a => this.addTrader(a));
+        if (saved) {
+            (async () => {
+                for (const a of JSON.parse(saved)) {
+                    await this.addTrader(a);
+                }
+            })();
+        }
 
         // Start auto refresh every 30 seconds
         this.startAutoRefresh();
