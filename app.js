@@ -143,72 +143,89 @@ class TraderDashboard {
         localStorage.setItem('trackedTraders', JSON.stringify([...this.traders.keys()]));
     }
 
-    async fetchData(address) {
-        try {
-            // Fetch from main dex and HIP-3 dexes (stocks/commodities)
-            const dexes = ['', 'xyz', 'felix', 'ventuals'];
-            const allPositions = [];
-            let totalAccountValue = 0;
+    parsePositions(data, dex) {
+        const positions = [];
+        if (data.assetPositions) {
+            for (const pos of data.assetPositions) {
+                const p = pos.position;
+                if (parseFloat(p.szi) === 0) continue;
 
-            for (const dex of dexes) {
+                const size = Math.abs(parseFloat(p.szi));
+                const isLong = parseFloat(p.szi) > 0;
+                const entry = parseFloat(p.entryPx);
+                const mark = parseFloat(p.positionValue) / size;
+                const pnl = parseFloat(p.unrealizedPnl);
+                const liq = parseFloat(p.liquidationPx) || 0;
+                const leverage = parseFloat(p.leverage?.value) || Math.round(parseFloat(p.positionValue) / parseFloat(p.marginUsed)) || 1;
+
+                const assetName = dex ? `${dex}:${p.coin}` : p.coin;
+
+                positions.push({
+                    asset: assetName,
+                    isLong,
+                    leverage: Math.round(leverage),
+                    size,
+                    entry,
+                    mark,
+                    pnl,
+                    liq,
+                    value: Math.abs(parseFloat(p.positionValue)),
+                    dex: dex || 'main'
+                });
+            }
+        }
+        return positions;
+    }
+
+    async fetchData(address) {
+        const allPositions = [];
+        let totalAccountValue = 0;
+
+        // Fetch main dex (crypto perps)
+        try {
+            const res = await fetch('https://api.hyperliquid.xyz/info', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type: 'clearinghouseState', user: address })
+            });
+            const data = await res.json();
+            if (data.marginSummary) {
+                totalAccountValue += parseFloat(data.marginSummary.accountValue) || 0;
+            }
+            allPositions.push(...this.parsePositions(data, ''));
+        } catch (e) {
+            console.error('Main dex API Error:', e);
+        }
+
+        // Fetch HIP-3 dexes (stocks/commodities)
+        const hip3Dexes = ['xyz', 'felix', 'ventuals'];
+        for (const dex of hip3Dexes) {
+            try {
                 const res = await fetch('https://api.hyperliquid.xyz/info', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ type: 'clearinghouseState', user: address, dex })
                 });
                 const data = await res.json();
-
                 if (data.marginSummary) {
                     totalAccountValue += parseFloat(data.marginSummary.accountValue) || 0;
                 }
-
-                if (data.assetPositions) {
-                    for (const pos of data.assetPositions) {
-                        const p = pos.position;
-                        if (parseFloat(p.szi) === 0) continue;
-
-                        const size = Math.abs(parseFloat(p.szi));
-                        const isLong = parseFloat(p.szi) > 0;
-                        const entry = parseFloat(p.entryPx);
-                        const mark = parseFloat(p.positionValue) / size;
-                        const pnl = parseFloat(p.unrealizedPnl);
-                        const liq = parseFloat(p.liquidationPx) || 0;
-                        const leverage = parseFloat(p.leverage?.value) || Math.round(parseFloat(p.positionValue) / parseFloat(p.marginUsed)) || 1;
-
-                        // Add dex prefix for HIP-3 assets
-                        const assetName = dex ? `${dex}:${p.coin}` : p.coin;
-
-                        allPositions.push({
-                            asset: assetName,
-                            isLong,
-                            leverage: Math.round(leverage),
-                            size,
-                            entry,
-                            mark,
-                            pnl,
-                            liq,
-                            value: Math.abs(parseFloat(p.positionValue)),
-                            dex: dex || 'main'
-                        });
-                    }
-                }
+                allPositions.push(...this.parsePositions(data, dex));
+            } catch (e) {
+                // HIP-3 dex not available, skip silently
             }
-
-            // Account summary
-            const totalPositionValue = allPositions.reduce((sum, p) => sum + p.value, 0);
-            const overallLeverage = totalAccountValue > 0 ? totalPositionValue / totalAccountValue : 0;
-
-            return {
-                address,
-                name: address.slice(0,6) + '...' + address.slice(-4),
-                positions: allPositions,
-                accountValue: totalAccountValue,
-                overallLeverage
-            };
-        } catch (e) {
-            console.error('API Error:', e);
-            return { address, name: address.slice(0,6)+'...'+address.slice(-4), positions: [], accountValue: 0, overallLeverage: 0 };
         }
+
+        const totalPositionValue = allPositions.reduce((sum, p) => sum + p.value, 0);
+        const overallLeverage = totalAccountValue > 0 ? totalPositionValue / totalAccountValue : 0;
+
+        return {
+            address,
+            name: address.slice(0,6) + '...' + address.slice(-4),
+            positions: allPositions,
+            accountValue: totalAccountValue,
+            overallLeverage
+        };
     }
 
     renderAt(data, parent, before) {
