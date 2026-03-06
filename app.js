@@ -145,52 +145,64 @@ class TraderDashboard {
 
     async fetchData(address) {
         try {
-            const res = await fetch('https://api.hyperliquid.xyz/info', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ type: 'clearinghouseState', user: address })
-            });
-            const data = await res.json();
+            // Fetch from main dex and HIP-3 dexes (stocks/commodities)
+            const dexes = ['', 'xyz', 'felix', 'ventuals'];
+            const allPositions = [];
+            let totalAccountValue = 0;
 
-            const positions = [];
-            if (data.assetPositions) {
-                for (const pos of data.assetPositions) {
-                    const p = pos.position;
-                    if (parseFloat(p.szi) === 0) continue;
+            for (const dex of dexes) {
+                const res = await fetch('https://api.hyperliquid.xyz/info', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: 'clearinghouseState', user: address, dex })
+                });
+                const data = await res.json();
 
-                    const size = Math.abs(parseFloat(p.szi));
-                    const isLong = parseFloat(p.szi) > 0;
-                    const entry = parseFloat(p.entryPx);
-                    const mark = parseFloat(p.positionValue) / size;
-                    const pnl = parseFloat(p.unrealizedPnl);
-                    const liq = parseFloat(p.liquidationPx) || 0;
-                    const leverage = parseFloat(p.leverage?.value) || Math.round(parseFloat(p.positionValue) / parseFloat(p.marginUsed)) || 1;
+                if (data.marginSummary) {
+                    totalAccountValue += parseFloat(data.marginSummary.accountValue) || 0;
+                }
 
-                    positions.push({
-                        asset: p.coin,
-                        isLong,
-                        leverage: Math.round(leverage),
-                        size,
-                        entry,
-                        mark,
-                        pnl,
-                        liq,
-                        value: Math.abs(parseFloat(p.positionValue))
-                    });
+                if (data.assetPositions) {
+                    for (const pos of data.assetPositions) {
+                        const p = pos.position;
+                        if (parseFloat(p.szi) === 0) continue;
+
+                        const size = Math.abs(parseFloat(p.szi));
+                        const isLong = parseFloat(p.szi) > 0;
+                        const entry = parseFloat(p.entryPx);
+                        const mark = parseFloat(p.positionValue) / size;
+                        const pnl = parseFloat(p.unrealizedPnl);
+                        const liq = parseFloat(p.liquidationPx) || 0;
+                        const leverage = parseFloat(p.leverage?.value) || Math.round(parseFloat(p.positionValue) / parseFloat(p.marginUsed)) || 1;
+
+                        // Add dex prefix for HIP-3 assets
+                        const assetName = dex ? `${dex}:${p.coin}` : p.coin;
+
+                        allPositions.push({
+                            asset: assetName,
+                            isLong,
+                            leverage: Math.round(leverage),
+                            size,
+                            entry,
+                            mark,
+                            pnl,
+                            liq,
+                            value: Math.abs(parseFloat(p.positionValue)),
+                            dex: dex || 'main'
+                        });
+                    }
                 }
             }
 
             // Account summary
-            const accountValue = parseFloat(data.marginSummary?.accountValue) || 0;
-            const totalMarginUsed = parseFloat(data.marginSummary?.totalMarginUsed) || 0;
-            const totalPositionValue = positions.reduce((sum, p) => sum + p.value, 0);
-            const overallLeverage = accountValue > 0 ? totalPositionValue / accountValue : 0;
+            const totalPositionValue = allPositions.reduce((sum, p) => sum + p.value, 0);
+            const overallLeverage = totalAccountValue > 0 ? totalPositionValue / totalAccountValue : 0;
 
             return {
                 address,
                 name: address.slice(0,6) + '...' + address.slice(-4),
-                positions,
-                accountValue,
+                positions: allPositions,
+                accountValue: totalAccountValue,
                 overallLeverage
             };
         } catch (e) {
@@ -348,20 +360,32 @@ class TraderDashboard {
         document.getElementById('historyModal').classList.add('show');
 
         try {
-            const res = await fetch('https://api.hyperliquid.xyz/info', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ type: 'userFills', user: address })
-            });
-            const fills = await res.json();
+            // Fetch from all dexes
+            const dexes = ['', 'xyz', 'felix', 'ventuals'];
+            let allFills = [];
 
-            if (!fills || fills.length === 0) {
+            for (const dex of dexes) {
+                const res = await fetch('https://api.hyperliquid.xyz/info', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: 'userFills', user: address, dex })
+                });
+                const fills = await res.json();
+                if (fills && fills.length > 0) {
+                    allFills = allFills.concat(fills.map(f => ({ ...f, dex })));
+                }
+            }
+
+            if (allFills.length === 0) {
                 list.innerHTML = '<div style="text-align:center;color:#888;padding:20px">暂无交易记录</div>';
                 return;
             }
 
-            const trades = fills.slice(0, 20).map(f => ({
-                asset: f.coin,
+            // Sort by time descending
+            allFills.sort((a, b) => new Date(b.time) - new Date(a.time));
+
+            const trades = allFills.slice(0, 20).map(f => ({
+                asset: f.dex ? `${f.dex}:${f.coin}` : f.coin,
                 isLong: f.side === 'B',
                 size: parseFloat(f.sz),
                 price: parseFloat(f.px),
